@@ -112,6 +112,18 @@ The test suite mocks CALL-E and Supabase — tests never place an outbound call 
 
 </details>
 
+## Lessons From Getting This Wrong Once
+
+Early builds of this repo committed real operational data during development: a real destination number, real CALL-E identifiers, and real call transcripts under `docs/evidence/`. External review caught it, not an internal check, which is its own lesson.
+
+The fix that actually held wasn't a find-and-replace pass. It was three separate things:
+
+- **Structural, not habitual, redaction.** `lib/call-log-store.ts`'s `redactLogForClient` allowlists exactly which fields cross the public boundary. Every other field on a log entry, including ones added later, is private by default because the function has to name a field to expose it, not the reverse.
+- **Fail closed on missing config, not fail open on a convenient default.** `TARGET_PHONE` used to fall back to a hardcoded value if the environment variable was unset. That's the kind of thing that looks harmless in a local `.env` and becomes a real leak the moment it ships. `app/api/check/route.ts` now skips all call evaluation for the cycle if the variable isn't set, rather than guessing.
+- **Rewriting history isn't the same as removing exposure.** A force-pushed clean branch stops the bad commit from being reachable, but the commit itself is still individually resolvable on GitHub until the platform's own cache is cleared. That's a second, separate step, not a formality.
+
+The actual rule this produced: a fixture or a fallback should be structurally incapable of holding real data, not just conventionally expected to hold fake data. `"REDACTED_DESTINATION"` as a literal test string can't leak a phone number by accident. A realistic-looking placeholder can.
+
 <div align="center">
 
 ![ArkNet Digital](https://capsule-render.vercel.app/api?type=waving&color=0:1D4ED8,55:0B1E3D,100:020617&height=120&section=footer&text=ArkNet%20Digital&fontSize=28&fontColor=ffffff)
