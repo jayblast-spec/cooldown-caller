@@ -112,6 +112,28 @@ The test suite mocks CALL-E and Supabase — tests never place an outbound call 
 
 </details>
 
+## 🧠 The Agent Pattern — Extend This
+
+Cooldown Caller is a reference implementation of a discovery-based agent. Use it as a template for:
+
+- **Event-driven alerts** — not dashboards
+- **Fail-closed security** — verify everything
+- **Single-channel output** — one call, not fifty notifications
+
+### Build Your Own Variation
+
+1. **Swap the input:** watch a database, an API, or a calendar instead of a cooldown.
+2. **Swap the output:** send an SMS, a webhook, or a Slack message instead of a call.
+3. **Swap the brain:** add an LLM step to qualify *why* the alert matters before it goes out.
+
+### Example Prompts to Give Claude/Cursor
+
+- *"Turn this agent into a compliance deadline tracker for SEC filings."*
+- *"Extend it to watch Ethereum gas fees and call when they drop below 20 gwei."*
+- *"Add a reasoning step that summarizes the opportunity before placing the call."*
+
+The pattern — watch, verify, alert, fail closed — stays the same. None of the above is built yet; it's a starting point for a fork, not a claim about this repo's current scope.
+
 ## Lessons From Getting This Wrong Once
 
 Early builds of this repo committed real operational data during development: a real destination number, real CALL-E identifiers, and real call transcripts under `docs/evidence/`. External review caught it, not an internal check, which is its own lesson.

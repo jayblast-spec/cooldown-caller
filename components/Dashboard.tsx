@@ -3,6 +3,8 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import type { ItemStatus } from "@/lib/cooldown";
 import type { PublicCallLogEntry } from "@/lib/call-log-store";
+import AgentPattern from "@/components/AgentPattern";
+import FinalCta from "@/components/FinalCta";
 
 interface CheckResponse {
   checked_at: string;
@@ -823,6 +825,8 @@ export default function Dashboard() {
         </div>
       </section>
 
+      <AgentPattern />
+
       <section aria-labelledby="faq-heading" className="mt-14 border-t border-[color:var(--color-border)] pt-10">
         <h2 id="faq-heading" className="mono-data mb-6 text-center text-xl font-bold text-[color:var(--color-foreground)]">
           FAQ
@@ -852,6 +856,8 @@ export default function Dashboard() {
           </div>
         </div>
       </section>
+
+      <FinalCta />
 
       <footer className="mt-10 border-t border-[color:var(--color-border)] pt-6 text-xs text-[color:var(--color-muted-foreground)]">
         <p className="mono-label mb-2 text-[color:var(--color-foreground)]">
