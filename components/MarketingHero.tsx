@@ -73,7 +73,7 @@ export default function MarketingHero() {
           </p>
 
           <h1 className="max-w-2xl font-sans text-4xl font-bold leading-[1.05] tracking-tight text-[color:var(--color-foreground)] sm:text-5xl">
-            Stop refreshing the page. Let it phone you instead.
+            The agent that calls you when the window opens.
           </h1>
 
           <p className="max-w-xl text-sm leading-relaxed text-[color:var(--color-muted-foreground)] sm:text-base">
