@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 640" font-family="JetBrains Mono, ui-monospace, monospace">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#00c2d1"/>
+    </marker>
+  </defs>
+  <rect width="1180" height="640" fill="#0a0a0b"/>
+
+  <!-- Title -->
+  <text x="40" y="46" fill="#e5e2e3" font-size="24" font-weight="700">Cooldown Caller — architecture</text>
+  <text x="40" y="70" fill="#849495" font-size="13">autonomous check → real CALL-E call → git-backed log → live dashboard</text>
+
+  <!-- 1. tracked_items.json -->
+  <rect x="40" y="120" width="220" height="110" rx="4" fill="#161618" stroke="#27272a"/>
+  <text x="60" y="150" fill="#00c2d1" font-size="12" letter-spacing="1">01 · DATA</text>
+  <text x="60" y="176" fill="#e5e2e3" font-size="15" font-weight="600">tracked_items.json</text>
+  <text x="60" y="198" fill="#849495" font-size="11">demo dataset: item name,</text>
+  <text x="60" y="214" fill="#849495" font-size="11">cooldown_hours, last_action_at</text>
+
+  <!-- 2. cooldown engine -->
+  <rect x="330" y="120" width="220" height="110" rx="4" fill="#161618" stroke="#27272a"/>
+  <text x="350" y="150" fill="#00c2d1" font-size="12" letter-spacing="1">02 · LOGIC</text>
+  <text x="350" y="176" fill="#e5e2e3" font-size="15" font-weight="600">cooldown.ts</text>
+  <text x="350" y="198" fill="#849495" font-size="11">pure date-math:</text>
+  <text x="350" y="214" fill="#849495" font-size="11">now &gt;= last_action + cooldown?</text>
+
+  <!-- 3. trigger -->
+  <rect x="620" y="60" width="230" height="110" rx="4" fill="#161618" stroke="#3f3f46"/>
+  <text x="640" y="90" fill="#00c2d1" font-size="12" letter-spacing="1">03 · TRIGGER</text>
+  <text x="640" y="116" fill="#e5e2e3" font-size="15" font-weight="600">Vercel Cron (daily)</text>
+  <text x="640" y="134" fill="#e5e2e3" font-size="15" font-weight="600">+ "Run check now"</text>
+  <text x="640" y="156" fill="#849495" font-size="11">GET/POST /api/check</text>
+
+  <!-- 4. CALL-E -->
+  <rect x="620" y="200" width="230" height="130" rx="4" fill="#0d2a2c" stroke="#00c2d1"/>
+  <text x="640" y="230" fill="#00f0ff" font-size="12" letter-spacing="1">04 · REAL CALL</text>
+  <text x="640" y="256" fill="#e5e2e3" font-size="15" font-weight="600">CALL-E Developer API</text>
+  <text x="640" y="276" fill="#dbfcff" font-size="11">POST /v1/calls → +1 (404) •••-6070</text>
+  <text x="640" y="294" fill="#dbfcff" font-size="11">GET /v1/calls/{'{'}id{'}'} → status,</text>
+  <text x="640" y="310" fill="#dbfcff" font-size="11">summary, real transcript</text>
+
+  <!-- 5. git log -->
+  <rect x="330" y="380" width="260" height="120" rx="4" fill="#161618" stroke="#27272a"/>
+  <text x="350" y="410" fill="#00c2d1" font-size="12" letter-spacing="1">05 · PERSISTENCE</text>
+  <text x="350" y="436" fill="#e5e2e3" font-size="15" font-weight="600">Vercel Edge Config</text>
+  <text x="350" y="456" fill="#849495" font-size="11">key/value store, written via</text>
+  <text x="350" y="472" fill="#849495" font-size="11">Vercel's REST API on every run</text>
+  <text x="350" y="488" fill="#849495" font-size="11">that changes something (no external DB)</text>
+
+  <!-- 6. dashboard -->
+  <rect x="40" y="380" width="220" height="120" rx="4" fill="#161618" stroke="#27272a"/>
+  <text x="60" y="410" fill="#00c2d1" font-size="12" letter-spacing="1">06 · UI</text>
+  <text x="60" y="436" fill="#e5e2e3" font-size="15" font-weight="600">Next.js dashboard</text>
+  <text x="60" y="458" fill="#849495" font-size="11">live cooldown timers +</text>
+  <text x="60" y="474" fill="#849495" font-size="11">privacy-redacted call status log</text>
+
+  <!-- arrows -->
+  <path d="M260 175 H330" stroke="#00c2d1" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <path d="M550 175 C 585 175, 585 115, 620 115" stroke="#00c2d1" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <path d="M735 170 V200" stroke="#00c2d1" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <path d="M735 330 C 735 440, 590 440, 590 440" stroke="#00c2d1" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <path d="M330 440 H260" stroke="#00c2d1" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <path d="M150 380 V230" stroke="#3f3f46" stroke-width="2" fill="none" stroke-dasharray="4 4" marker-end="url(#arrow)"/>
+  <text x="160" y="300" fill="#849495" font-size="10">GET /api/check</text>
+  <text x="160" y="312" fill="#849495" font-size="10">(dashboard polls)</text>
+
+  <!-- legend -->
+  <text x="40" y="570" fill="#849495" font-size="11">Idempotency-Key on every CALL-E call = one item's cooldown cycle can never trigger two calls,</text>
+  <text x="40" y="588" fill="#849495" font-size="11">even if the check endpoint is re-run (cron + manual button both hitting the same cycle).</text>
+</svg>

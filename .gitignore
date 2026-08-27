@@ -1,0 +1,12 @@
+.env
+.env.local
+__pycache__/
+*.pyc
+node_modules/
+.next/
+.vercel/
+.playwright-mcp/
+
+.vercel
+.env*
+tsconfig.tsbuildinfo

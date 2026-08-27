@@ -1,0 +1,32 @@
+{
+  "_note": "HISTORICAL / SEED REFERENCE ONLY -- no longer read at runtime as of the 2026-08-25 Supabase migration. app/api/check/route.ts now sources tracked items from a real Supabase 'tracked_items' table via lib/tracked-items-store.ts (see docs/supabase/001_tracked_items.sql, which seeds this exact data into that table). This file is kept only as the documented origin of the three example items and their seeded last_action_at values. Original note: example tracked items modeled on real recurring-action problems Joy Ogunleye actually has (ElevenLabs Music Marketplace publishing cap, Craigslist listing repost window) -- NOT live-synced from ElevenLabs or Craigslist via API (no such API access exists). The one-time 'demo-video-live-trigger' item (5-minute cooldown, used only to record the hackathon demo video) was permanently removed earlier since nothing ever advanced its last_action_at, so it would have stayed actionable forever. All items must carry cooldown_hours >= 1 (see lib/cooldown.ts MIN_COOLDOWN_HOURS and the tracked_items_cooldown_floor CHECK constraint), enforced at three independent layers now: the Supabase CHECK constraint, lib/tracked-items-store.ts's createTrackedItem, and lib/cooldown.ts's validateTrackedItems.",
+  "items": [
+    {
+      "id": "elevenlabs-music-publish",
+      "name": "ElevenLabs Music Marketplace: publish next track",
+      "category": "content-publishing",
+      "cooldown_hours": 24,
+      "last_action_at": "2026-08-24T09:00:00Z",
+      "source": "example (ElevenLabs Music Marketplace caps publishing at 5 tracks per rolling 24 hours)",
+      "call_task": "Deliver a short reminder call. Say: Hi, this is Cooldown Caller. Your ElevenLabs Music Marketplace 24 hour publishing cooldown has just cleared -- you're clear to publish your next track now. This is an automated reminder, no action needed on this call. Goodbye. Then end the call politely. Do not ask questions."
+    },
+    {
+      "id": "craigslist-repost-listing",
+      "name": "Craigslist: repost 'Vintage record player' listing",
+      "category": "marketplace-listing",
+      "cooldown_hours": 1080,
+      "last_action_at": "2026-07-20T14:30:00Z",
+      "source": "example (Craigslist listings expire and need reposting roughly every 45 days)",
+      "call_task": "Deliver a short reminder call. Say: Hi, this is Cooldown Caller. Your Craigslist listing for the Vintage record player is now past its 45 day repost window and has likely expired -- it needs to be reposted. This is an automated reminder, no action needed on this call. Goodbye. Then end the call politely. Do not ask questions."
+    },
+    {
+      "id": "quarterly-domain-renewal-check",
+      "name": "Domain portfolio: quarterly renewal audit",
+      "category": "back-office",
+      "cooldown_hours": 2160,
+      "last_action_at": "2026-05-28T12:00:00Z",
+      "source": "example (a quarterly recurring back-office check, modeled as a 90 day cooldown to show a third cadence)",
+      "call_task": "Deliver a short reminder call. Say: Hi, this is Cooldown Caller. It has been 90 days since the last domain portfolio renewal audit -- it's time to run the next one. This is an automated reminder, no action needed on this call. Goodbye. Then end the call politely. Do not ask questions."
+    }
+  ]
+}
