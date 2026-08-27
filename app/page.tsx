@@ -1,5 +1,11 @@
 import Dashboard from "@/components/Dashboard";
+import MarketingHero from "@/components/MarketingHero";
 
 export default function Home() {
-  return <Dashboard />;
+  return (
+    <>
+      <MarketingHero />
+      <Dashboard />
+    </>
+  );
 }

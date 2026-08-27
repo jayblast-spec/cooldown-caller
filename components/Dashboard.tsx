@@ -676,7 +676,7 @@ export default function Dashboard() {
   const isWatching = readyCount === 0;
 
   return (
-    <main className="mx-auto max-w-5xl px-5 pb-16 sm:px-8">
+    <main id="dashboard" className="mx-auto max-w-5xl px-5 pb-16 sm:px-8">
       {/* Hero -- the agency of a real outbound call is the whole story. */}
       <header className="instrument-grid-bg relative -mx-5 mb-10 flex flex-col items-center gap-6 overflow-hidden border-b border-[color:var(--color-border)] px-5 pb-12 pt-14 text-center sm:-mx-8 sm:px-8">
         <div className="relative flex h-20 w-20 items-center justify-center" aria-hidden="true">
