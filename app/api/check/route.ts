@@ -2,7 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "crypto";
 import { computeAllStatuses, type TrackedItemsFile } from "@/lib/cooldown";
 import { placeCall, getCall, CALLE_TERMINAL_STATUSES } from "@/lib/calle";
-import { readLog, writeLog, claimCallSlot, redactLogForClient, type CallLogEntry } from "@/lib/call-log-store";
+import {
+  readLog,
+  writeLog,
+  claimCallSlot,
+  redactLogForClient,
+  type CallLogEntry,
+} from "@/lib/call-log-store";
 import { loadTrackedItems } from "@/lib/tracked-items-store";
 
 export const dynamic = "force-dynamic";
@@ -210,9 +216,26 @@ export async function GET(req: NextRequest) {
   }
 }
 
+// Origin-header auth (the fallback manualAuthorized() uses when
+// MANUAL_TRIGGER_TOKEN isn't set) only stops browser-based requests -- a
+// scripted client can set any header it wants, Origin included. There is no
+// login system on this demo, so a client-embedded secret wouldn't actually
+// be secret either. This global throttle is the real mitigation for the
+// manual path: it bounds how often anyone, browser or script, can force a
+// real evaluation cycle (and therefore real calls), reusing the same
+// Supabase-backed lock claimCallSlot() already uses for per-item locking.
+const MANUAL_TRIGGER_THROTTLE_MS = 60 * 1000;
+
 export async function POST(req?: NextRequest) {
   if (!manualAuthorized(req)) {
     return NextResponse.json({ error: "Unauthorized manual trigger." }, { status: 401 });
+  }
+  const throttle = await claimCallSlot("manual-trigger-throttle", "global", MANUAL_TRIGGER_THROTTLE_MS);
+  if (!throttle.claimed) {
+    return NextResponse.json(
+      { error: `Manual trigger throttled: ${throttle.reason}` },
+      { status: 429 }
+    );
   }
   try {
     const result = await runCheck("manual");
