@@ -184,21 +184,3 @@ export async function markItemDone(id: string): Promise<MarkDoneResult> {
   if (!data) return { ok: false, error: "item not found", status: 404 };
   return { ok: true, item: rowToItem(data as TrackedItemRow) };
 }
-
-export type DeleteItemResult = { ok: true } | { ok: false; error: string; status: number };
-
-/**
- * Permanently removes a tracked item. Takes just an id string -- same
- * narrow-input shape as markItemDone, nothing else on this row is ever
- * read from the caller.
- */
-export async function deleteTrackedItem(id: string): Promise<DeleteItemResult> {
-  const client = getClient();
-  if (!client) return { ok: false, error: "Supabase not configured", status: 503 };
-  if (typeof id !== "string" || !id.trim()) return { ok: false, error: "id is required", status: 400 };
-
-  const { error, count } = await client.from(TABLE).delete({ count: "exact" }).eq("id", id);
-  if (error) return { ok: false, error: `Supabase delete failed: ${error.message}`, status: 500 };
-  if (!count) return { ok: false, error: "item not found", status: 404 };
-  return { ok: true };
-}
