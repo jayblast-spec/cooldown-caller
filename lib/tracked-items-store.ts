@@ -125,12 +125,27 @@ export type CreateItemResult = { ok: true; item: TrackedItem } | { ok: false; er
  * lib/tracked-items-store.test.ts for a test that proves this directly by
  * asserting on the exact shape of the row passed to the database client.
  */
+// name/category are embedded verbatim into buildCallTask()'s script, which
+// CALL-E receives as an instruction for a real phone call -- not just text
+// read aloud. A short length cap and stripped control/newline characters
+// bound how much of that instruction an anonymous caller to this
+// unauthenticated, unrate-limited endpoint can influence. This does not
+// close the underlying trust boundary (that's the /api/check auth check),
+// it only shrinks the payload an attacker can inject through this path.
+const MAX_NAME_LENGTH = 120;
+const MAX_CATEGORY_LENGTH = 40;
+
+function sanitizeText(value: string): string {
+  return value.replace(/[\r\n\t\x00-\x1f\x7f]+/g, " ").trim();
+}
+
 export async function createTrackedItem(input: NewTrackedItemInput): Promise<CreateItemResult> {
   const client = getClient();
   if (!client) return { ok: false, error: "Supabase not configured", status: 503 };
 
-  const name = typeof input.name === "string" ? input.name.trim() : "";
-  const category = typeof input.category === "string" ? input.category.trim() : "";
+  const name = typeof input.name === "string" ? sanitizeText(input.name).slice(0, MAX_NAME_LENGTH) : "";
+  const category =
+    typeof input.category === "string" ? sanitizeText(input.category).slice(0, MAX_CATEGORY_LENGTH) : "";
   const cooldownHours = Number(input.cooldown_hours);
   const lastActionAt = input.last_action_at ? new Date(input.last_action_at) : new Date();
 
