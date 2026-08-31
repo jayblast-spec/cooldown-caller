@@ -1,9 +1,14 @@
 import { NextResponse } from "next/server";
 import { computeAllStatuses, type TrackedItemsFile } from "@/lib/cooldown";
+import { buildCallDecision } from "@/lib/call-decision";
 import { readLog, redactLogForClient } from "@/lib/call-log-store";
 import { loadTrackedItems } from "@/lib/tracked-items-store";
 
 export const dynamic = "force-dynamic";
+
+// Same env check app/api/check/route.ts uses to gate real calls -- reading
+// process.env has no side effect, so mirroring it here for display is safe.
+const TARGET_PHONE = process.env.TARGET_PHONE;
 
 /**
  * Read-only dashboard endpoint: computes the same `statuses`/`log` shape
@@ -27,12 +32,14 @@ export async function GET() {
     items: itemsResult.ok ? itemsResult.items : [],
   };
   const statuses = computeAllStatuses(file, now);
+  const decisionTrace = statuses.map((status) => buildCallDecision(status, Boolean(TARGET_PHONE)));
 
   const logResult = await readLog();
   if (!logResult.ok) {
     return NextResponse.json({
       checked_at: now.toISOString(),
       statuses,
+      decision_trace: decisionTrace,
       log: [],
       new_calls_placed: [],
       warning: `Call log unavailable: ${logResult.error}`,
@@ -42,6 +49,7 @@ export async function GET() {
   return NextResponse.json({
     checked_at: now.toISOString(),
     statuses,
+    decision_trace: decisionTrace,
     log: redactLogForClient(logResult.entries),
     new_calls_placed: [],
   });

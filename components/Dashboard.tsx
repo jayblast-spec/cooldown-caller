@@ -2,6 +2,7 @@
 
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import type { ItemStatus } from "@/lib/cooldown";
+import type { CallDecision } from "@/lib/call-decision";
 import type { PublicCallLogEntry } from "@/lib/call-log-store";
 import AgentPattern from "@/components/AgentPattern";
 import FinalCta from "@/components/FinalCta";
@@ -9,10 +10,17 @@ import FinalCta from "@/components/FinalCta";
 interface CheckResponse {
   checked_at: string;
   statuses: ItemStatus[];
+  decision_trace?: CallDecision[];
   log: PublicCallLogEntry[];
   new_calls_placed?: string[];
   error?: string;
 }
+
+const DECISION_AGENT_LABEL: Record<CallDecision["agents"][number]["agent"], string> = {
+  watcher: "Watcher",
+  permission: "Permission Gate",
+  briefing: "Briefing",
+};
 
 function formatDuration(totalSeconds: number): string {
   if (totalSeconds <= 0) return "00:00:00";
@@ -198,12 +206,34 @@ function CooldownRing({ percent, ready, category }: { percent: number; ready: bo
   );
 }
 
+/** Read-only rendering of the fail-closed decision mesh (Watcher -> Permission
+ *  Gate -> Briefing) that /api/check runs before CALL-E dials. Sourced from
+ *  /api/status's decision_trace, itself the same pure buildCallDecision()
+ *  function -- this never triggers a call, it only shows the same reasoning
+ *  that would gate one. */
+function DecisionTrace({ decision }: { decision: CallDecision }) {
+  return (
+    <div className="mt-3 flex flex-col gap-1.5 border-t border-[color:var(--color-border)] pt-3">
+      {decision.agents.map((step) => (
+        <div key={step.agent} className="flex items-start gap-2 text-xs">
+          <span className="mono-label shrink-0 text-[color:var(--color-primary)]">
+            {DECISION_AGENT_LABEL[step.agent]}
+          </span>
+          <span className="text-[color:var(--color-muted-foreground)]">{step.finding}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function ItemCard({
   status,
+  decision,
   index,
   onMarkDone,
 }: {
   status: ItemStatus;
+  decision?: CallDecision;
   index: number;
   onMarkDone: (id: string) => Promise<void>;
 }) {
@@ -297,6 +327,7 @@ function ItemCard({
           </button>
         </div>
       </div>
+      {decision && <DecisionTrace decision={decision} />}
     </div>
   );
 }
@@ -771,7 +802,15 @@ export default function Dashboard() {
           />
         </div>
         <div className="instrument-bay grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {data?.statuses.map((s, i) => <ItemCard key={s.id} status={s} index={i} onMarkDone={markDone} />)}
+          {data?.statuses.map((s, i) => (
+            <ItemCard
+              key={s.id}
+              status={s}
+              decision={data.decision_trace?.find((d) => d.item_id === s.id)}
+              index={i}
+              onMarkDone={markDone}
+            />
+          ))}
           {!data && (
             <div className="instrument-card p-4 text-sm text-[color:var(--color-muted-foreground)]">
               Loading…
