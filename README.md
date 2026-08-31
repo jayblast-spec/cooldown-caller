@@ -33,6 +33,8 @@ Cooldown Caller tracks recurring actions with cooldown windows and places a remi
 
 ## What It Does
 
+Before any CALL-E request can run, the new **Call Decision Mesh** composes three specialists: Watcher verifies the cooldown, Permission Gate confirms the non-overridable authorized destination, and Briefing produces the bounded call objective. Only a `CALL` result proceeds; `WAIT` and `BLOCK` are fail-closed outcomes with an inspectable trace.
+
 Cooldown Caller watches a set of tracked items, each with a cooldown period and a last-action timestamp, and calls a single pre-authorized phone number through CALL-E to remind you the moment one clears. It is deliberately **discovery-based, not continuous**: a call only happens when something actually runs the check.
 
 - Vercel Cron calls `/api/check` once daily at `13:00 UTC`.

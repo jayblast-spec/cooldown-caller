@@ -10,6 +10,7 @@ import {
   type CallLogEntry,
 } from "@/lib/call-log-store";
 import { loadTrackedItems } from "@/lib/tracked-items-store";
+import { buildCallDecision } from "@/lib/call-decision";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -73,6 +74,7 @@ export async function runCheck(trigger: "cron" | "manual") {
     items: itemsResult.ok ? itemsResult.items : [],
   };
   const statuses = computeAllStatuses(file, now);
+  const decisionTrace = statuses.map((status) => buildCallDecision(status, Boolean(TARGET_PHONE)));
 
   // SAFETY: the duplicate-call guard below depends entirely on being able to
   // read the existing call log. If that read fails or can't be trusted, we
@@ -134,7 +136,8 @@ export async function runCheck(trigger: "cron" | "manual") {
   //    lock contention, etc.) never skips evaluation of the rest.
   for (const status of statuses) {
     try {
-      if (status.state !== "actionable") continue;
+      const decision = decisionTrace.find((candidate) => candidate.item_id === status.id);
+      if (decision?.decision !== "CALL") continue;
 
       const alreadyCalledThisCycle = entries.some(
         (e) => e.item_id === status.id && new Date(e.created_at) >= new Date(status.last_action_at)
@@ -194,6 +197,7 @@ export async function runCheck(trigger: "cron" | "manual") {
     trigger,
     statuses,
     new_calls_placed: newlyPlaced,
+    decision_trace: decisionTrace,
     log: redactLogForClient(entries),
   };
 }
