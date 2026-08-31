@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { TourReplayButton } from "@/components/OnboardingTour";
 
 /**
  * Marketing hero, added above the live Dashboard. Sourced from a Wix Aria
@@ -58,12 +59,15 @@ export default function MarketingHero() {
             <WaveformMark className="h-5 w-5 text-[color:var(--color-primary)]" />
             <span className="mono-label text-[color:var(--color-foreground)]">Cooldown Caller</span>
           </span>
-          <a
-            href="#dashboard"
-            className="mono-label rounded-sm border border-[color:var(--color-border-strong)] px-3 py-1.5 text-[color:var(--color-muted-foreground)] transition-colors hover:border-[color:var(--color-primary)] hover:text-[color:var(--color-primary)]"
-          >
-            open dashboard
-          </a>
+          <span className="flex items-center gap-2">
+            <TourReplayButton className="hidden sm:inline-flex" />
+            <a
+              href="#dashboard"
+              className="mono-label rounded-sm border border-[color:var(--color-border-strong)] px-3 py-1.5 text-[color:var(--color-muted-foreground)] transition-colors hover:border-[color:var(--color-primary)] hover:text-[color:var(--color-primary)]"
+            >
+              open dashboard
+            </a>
+          </span>
         </nav>
 
         <div className="flex flex-col items-center gap-6 py-16 text-center sm:py-24">

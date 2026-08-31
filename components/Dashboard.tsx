@@ -582,7 +582,7 @@ function DemoCallButton() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className="flex flex-col items-center gap-2" data-tour="ring-demo">
       <button
         onClick={ring}
         disabled={state === "calling"}
@@ -712,7 +712,7 @@ export default function Dashboard() {
     <main id="dashboard" className="mx-auto max-w-5xl px-5 pb-16 sm:px-8">
       {/* Hero -- the agency of a real outbound call is the whole story. */}
       <header className="instrument-grid-bg relative -mx-5 mb-10 flex flex-col items-center gap-6 overflow-hidden border-b border-[color:var(--color-border)] px-5 pb-12 pt-14 text-center sm:-mx-8 sm:px-8">
-        <div className="relative flex h-20 w-20 items-center justify-center" aria-hidden="true">
+        <div className="relative flex h-20 w-20 items-center justify-center" aria-hidden="true" data-tour="watch">
           <span className="watch-rings" />
           <span className="watch-rings" style={{ animationDelay: "0.9s" }} />
           <span className="watch-rings" style={{ animationDelay: "1.8s" }} />
@@ -779,6 +779,7 @@ export default function Dashboard() {
           <button
             onClick={runCheckNow}
             disabled={loading}
+            data-tour="run-check"
             className="mono-label rounded-sm bg-[color:var(--color-primary)] px-4 py-2 text-[color:var(--color-primary-foreground)] transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-primary)] disabled:opacity-50"
           >
             {loading ? "checking…" : "run check now"}
@@ -792,7 +793,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      <section aria-labelledby="tracked-items-heading" className="mb-10">
+      <section aria-labelledby="tracked-items-heading" className="mb-10" data-tour="tracked-items">
         <h2 id="tracked-items-heading" className="mono-label mb-3">
           tracked items
         </h2>
@@ -820,7 +821,7 @@ export default function Dashboard() {
         </div>
       </section>
 
-      <section aria-labelledby="call-log-heading">
+      <section aria-labelledby="call-log-heading" data-tour="call-log">
         <h2 id="call-log-heading" className="mono-label mb-3">
           call activity - public operational status only
         </h2>
